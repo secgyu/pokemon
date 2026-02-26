@@ -1,8 +1,8 @@
-import { type Pokemon, getSpriteUrl, formatPokedexNumber, TYPE_COLORS } from "@/data/pokemon";
+import { type PokemonListItem, getSpriteUrl, formatPokedexNumber, TYPE_COLORS } from "@/data/pokemon";
 import { TypeBadge } from "./TypeBadge";
 
 interface PokemonCardProps {
-  pokemon: Pokemon;
+  pokemon: PokemonListItem;
   onClick?: () => void;
 }
 
@@ -13,9 +13,7 @@ export function PokemonCard({ pokemon, onClick }: PokemonCardProps) {
     <button
       onClick={onClick}
       className="group relative flex flex-col items-center rounded-xl border border-border bg-card p-4 text-left transition-all duration-200 hover:-translate-y-1 hover:border-[#4a4a8a] cursor-pointer"
-      style={{
-        boxShadow: "none",
-      }}
+      style={{ boxShadow: "none" }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `0 0 16px ${primaryColor}25`;
       }}

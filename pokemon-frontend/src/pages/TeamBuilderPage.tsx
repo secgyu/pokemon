@@ -94,9 +94,7 @@ export function TeamBuilderPage() {
   const weaknesses = getTeamWeaknesses(activeTeam);
   const coverage = getTeamCoverage(activeTeam);
 
-  const criticalWeaknesses = [...weaknesses.entries()]
-    .filter(([, count]) => count >= 3)
-    .map(([type]) => type);
+  const criticalWeaknesses = [...weaknesses.entries()].filter(([, count]) => count >= 3).map(([type]) => type);
 
   const uncoveredTypes = ALL_TYPES.filter((t) => !coverage.has(t));
 
@@ -126,9 +124,7 @@ export function TeamBuilderPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-pixel text-lg text-foreground sm:text-xl">Team Builder</h1>
-        <p className="mt-1 text-sm text-secondary-custom">
-          6마리의 포켓몬으로 최강의 팀을 구성하세요
-        </p>
+        <p className="mt-1 text-sm text-secondary-custom">6마리의 포켓몬으로 최강의 팀을 구성하세요</p>
       </div>
 
       {/* Team Slots */}
@@ -145,21 +141,13 @@ export function TeamBuilderPage() {
               >
                 <X className="h-3 w-3" />
               </button>
-              <img
-                src={getSpriteUrl(pokemon.id)}
-                alt={pokemon.name}
-                className="h-14 w-14 sprite-pixel"
-              />
+              <img src={getSpriteUrl(pokemon.id)} alt={pokemon.name} className="h-14 w-14 sprite-pixel" />
               <p className="mt-1 text-[10px] font-semibold text-foreground truncate w-full text-center">
                 {pokemon.nameKo}
               </p>
               <div className="mt-1 flex gap-0.5">
                 {pokemon.types.map((t) => (
-                  <span
-                    key={t}
-                    className="h-1.5 w-4 rounded-full"
-                    style={{ backgroundColor: TYPE_COLORS[t] }}
-                  />
+                  <span key={t} className="h-1.5 w-4 rounded-full" style={{ backgroundColor: TYPE_COLORS[t] }} />
                 ))}
               </div>
             </div>
@@ -174,7 +162,7 @@ export function TeamBuilderPage() {
               </div>
               <p className="mt-2 text-[10px] text-muted-foreground">슬롯 {i + 1}</p>
             </button>
-          )
+          ),
         )}
       </div>
 
@@ -182,9 +170,7 @@ export function TeamBuilderPage() {
       {showPicker && (
         <div className="rounded-xl border border-border bg-card">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <h3 className="text-sm font-semibold text-foreground">
-              슬롯 {pickerSlot + 1}에 추가할 포켓몬 선택
-            </h3>
+            <h3 className="text-sm font-semibold text-foreground">슬롯 {pickerSlot + 1}에 추가할 포켓몬 선택</h3>
             <button
               onClick={() => setShowPicker(false)}
               className="text-muted-foreground hover:text-foreground cursor-pointer"
@@ -202,23 +188,13 @@ export function TeamBuilderPage() {
                     onClick={() => !alreadyInTeam && addToTeam(pokemon)}
                     disabled={alreadyInTeam}
                     className={`flex items-center gap-2 rounded-lg border border-border p-2 transition-all cursor-pointer ${
-                      alreadyInTeam
-                        ? "cursor-not-allowed opacity-30"
-                        : "hover:border-[#4a4a8a] hover:bg-[#12121a]"
+                      alreadyInTeam ? "cursor-not-allowed opacity-30" : "hover:border-[#4a4a8a] hover:bg-[#12121a]"
                     }`}
                   >
-                    <img
-                      src={getSpriteUrl(pokemon.id)}
-                      alt={pokemon.name}
-                      className="h-10 w-10 sprite-pixel"
-                    />
+                    <img src={getSpriteUrl(pokemon.id)} alt={pokemon.name} className="h-10 w-10 sprite-pixel" />
                     <div className="text-left min-w-0">
-                      <p className="text-xs font-semibold text-foreground truncate">
-                        {pokemon.nameKo}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground">
-                        {formatPokedexNumber(pokemon.id)}
-                      </p>
+                      <p className="text-xs font-semibold text-foreground truncate">{pokemon.nameKo}</p>
+                      <p className="text-[10px] text-muted-foreground">{formatPokedexNumber(pokemon.id)}</p>
                     </div>
                   </button>
                 );
@@ -255,9 +231,7 @@ export function TeamBuilderPage() {
                 <div className="flex items-start gap-2 rounded-lg bg-[#cc0000]/10 p-3">
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#cc0000]" />
                   <div>
-                    <p className="text-xs font-semibold text-[#cc0000]">
-                      주의: 공통 약점이 많습니다
-                    </p>
+                    <p className="text-xs font-semibold text-[#cc0000]">주의: 공통 약점이 많습니다</p>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {criticalWeaknesses.map((type) => (
                         <TypeBadge key={type} type={type} />
@@ -309,29 +283,13 @@ export function TeamBuilderPage() {
                           className="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded text-[10px] font-bold"
                           style={{
                             backgroundColor:
-                              count >= 3
-                                ? "#cc000030"
-                                : count >= 2
-                                  ? "#f5c51820"
-                                  : count >= 1
-                                    ? "#2a2a4a"
-                                    : "#1a1a2e",
-                            color:
-                              count >= 3
-                                ? "#cc0000"
-                                : count >= 2
-                                  ? "#f5c518"
-                                  : count >= 1
-                                    ? "#a0a0b0"
-                                    : "#606070",
+                              count >= 3 ? "#cc000030" : count >= 2 ? "#f5c51820" : count >= 1 ? "#2a2a4a" : "#1a1a2e",
+                            color: count >= 3 ? "#cc0000" : count >= 2 ? "#f5c518" : count >= 1 ? "#a0a0b0" : "#606070",
                           }}
                         >
                           {count}
                         </div>
-                        <span
-                          className="block h-1 rounded-full"
-                          style={{ backgroundColor: TYPE_COLORS[type] }}
-                        />
+                        <span className="block h-1 rounded-full" style={{ backgroundColor: TYPE_COLORS[type] }} />
                       </div>
                     );
                   })}

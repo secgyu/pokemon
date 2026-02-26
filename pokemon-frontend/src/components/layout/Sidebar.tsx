@@ -29,9 +29,7 @@ export function Sidebar() {
           <circle cx="50" cy="50" r="12" fill="#f0f0f0" stroke="#2a2a4a" strokeWidth="4" />
           <circle cx="50" cy="50" r="6" fill="#2a2a4a" />
         </svg>
-        <span className="font-pixel text-[11px] leading-tight text-primary">
-          POKéMON
-        </span>
+        <span className="font-pixel text-[11px] leading-tight text-primary">POKéMON</span>
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 px-3">
@@ -55,9 +53,7 @@ export function Sidebar() {
       </nav>
 
       <div className="border-t border-border px-5 py-4">
-        <p className="text-[10px] text-muted-custom">
-          Pokémon All-in-One v1.0
-        </p>
+        <p className="text-[10px] text-muted-custom">Pokémon All-in-One v1.0</p>
       </div>
     </aside>
   );

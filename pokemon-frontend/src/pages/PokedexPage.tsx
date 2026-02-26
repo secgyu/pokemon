@@ -1,45 +1,93 @@
 import { useState, useMemo } from "react";
-import { Search, X } from "lucide-react";
+import { Search, X, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { POKEMON_DATA, ALL_TYPES, type Pokemon, type PokemonType } from "@/data/pokemon";
+import { ALL_TYPES, GENERATIONS, type PokemonType } from "@/data/pokemon";
+import { usePokemonList } from "@/hooks/usePokemonList";
 import { PokemonCard } from "@/components/pokemon/PokemonCard";
 import { PokemonDetailDialog } from "@/components/pokemon/PokemonDetailDialog";
+import { PokeballSpinner } from "@/components/pokemon/PokeballSpinner";
 import { TypeBadge } from "@/components/pokemon/TypeBadge";
+import { Button } from "@/components/ui/button";
+
+const PAGE_SIZE = 60;
 
 export function PokedexPage() {
+  const { pokemon, loading, error } = usePokemonList();
   const [search, setSearch] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<PokemonType[]>([]);
-  const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
+  const [selectedGen, setSelectedGen] = useState(0);
+  const [selectedPokemonId, setSelectedPokemonId] = useState<number | null>(null);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const toggleType = (type: PokemonType) => {
-    setSelectedTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
+    setSelectedTypes((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]));
   };
 
   const filtered = useMemo(() => {
-    return POKEMON_DATA.filter((p) => {
+    const [genMin, genMax] = GENERATIONS[selectedGen].range;
+
+    return pokemon.filter((p) => {
+      const matchesGen = p.id >= genMin && p.id <= genMax;
+
       const matchesSearch =
         !search ||
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.nameKo.includes(search) ||
         String(p.id).includes(search);
 
-      const matchesType =
-        selectedTypes.length === 0 ||
-        selectedTypes.some((t) => p.types.includes(t));
+      const matchesType = selectedTypes.length === 0 || selectedTypes.some((t) => p.types.includes(t));
 
-      return matchesSearch && matchesType;
+      return matchesGen && matchesSearch && matchesType;
     });
-  }, [search, selectedTypes]);
+  }, [pokemon, search, selectedTypes, selectedGen]);
+
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
+  const handleGenChange = (index: number) => {
+    setSelectedGen(index);
+    setVisibleCount(PAGE_SIZE);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32">
+        <PokeballSpinner size={56} />
+        <p className="mt-4 font-pixel text-xs text-muted-foreground">포켓몬 도감 로딩중...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 text-center">
+        <p className="font-pixel text-sm text-[#cc0000]">로딩 실패</p>
+        <p className="mt-2 text-xs text-muted-foreground">{error}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <h1 className="font-pixel text-lg text-foreground sm:text-xl">Pokédex</h1>
-        <p className="mt-1 text-sm text-secondary-custom">
-          포켓몬 도감에서 원하는 포켓몬을 찾아보세요
-        </p>
+        <p className="mt-1 text-sm text-secondary-custom">총 {pokemon.length}마리의 포켓몬 도감</p>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5">
+        {GENERATIONS.map((gen, i) => (
+          <button
+            key={gen.label}
+            onClick={() => handleGenChange(i)}
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+              selectedGen === i
+                ? "bg-primary text-primary-foreground"
+                : "bg-card text-muted-foreground hover:text-foreground hover:bg-secondary"
+            }`}
+          >
+            {gen.label}
+          </button>
+        ))}
       </div>
 
       <div className="space-y-3">
@@ -48,7 +96,10 @@ export function PokedexPage() {
           <Input
             placeholder="이름, 번호로 검색..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setVisibleCount(PAGE_SIZE);
+            }}
             className="border-border bg-card pl-9 pr-9 text-foreground placeholder:text-muted-foreground focus-visible:ring-ring"
           />
           {search && (
@@ -65,7 +116,10 @@ export function PokedexPage() {
           {ALL_TYPES.map((type) => (
             <button
               key={type}
-              onClick={() => toggleType(type)}
+              onClick={() => {
+                toggleType(type);
+                setVisibleCount(PAGE_SIZE);
+              }}
               className={`cursor-pointer transition-all duration-150 ${
                 selectedTypes.includes(type)
                   ? "scale-105 ring-2 ring-white/30 rounded-full"
@@ -89,6 +143,7 @@ export function PokedexPage() {
 
       <div className="text-xs text-muted-custom">
         {filtered.length}마리의 포켓몬
+        {visibleCount < filtered.length && ` (${visible.length}마리 표시중)`}
       </div>
 
       {filtered.length === 0 ? (
@@ -97,22 +152,32 @@ export function PokedexPage() {
           <p className="mt-2 text-xs text-muted-custom">다른 이름이나 타입으로 검색해보세요</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {filtered.map((pokemon) => (
-            <PokemonCard
-              key={pokemon.id}
-              pokemon={pokemon}
-              onClick={() => setSelectedPokemon(pokemon)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {visible.map((p) => (
+              <PokemonCard key={p.id} pokemon={p} onClick={() => setSelectedPokemonId(p.id)} />
+            ))}
+          </div>
+
+          {hasMore && (
+            <div className="flex justify-center pt-2 pb-4">
+              <Button
+                onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                variant="outline"
+                className="gap-2 border-border text-foreground hover:bg-secondary cursor-pointer"
+              >
+                <ChevronDown className="h-4 w-4" />더 보기 ({filtered.length - visibleCount}마리 남음)
+              </Button>
+            </div>
+          )}
+        </>
       )}
 
       <PokemonDetailDialog
-        pokemon={selectedPokemon}
-        open={!!selectedPokemon}
+        pokemonId={selectedPokemonId}
+        open={selectedPokemonId !== null}
         onOpenChange={(open) => {
-          if (!open) setSelectedPokemon(null);
+          if (!open) setSelectedPokemonId(null);
         }}
       />
     </div>

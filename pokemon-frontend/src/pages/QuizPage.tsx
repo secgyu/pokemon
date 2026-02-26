@@ -27,10 +27,7 @@ export function QuizPage() {
   const totalQuestions = Math.min(10, questions.length);
   const currentPokemon = questions[questionIndex];
 
-  const choices = useMemo(
-    () => getRandomChoices(currentPokemon),
-    [currentPokemon]
-  );
+  const choices = useMemo(() => getRandomChoices(currentPokemon), [currentPokemon]);
 
   const handleAnswer = useCallback(
     (pokemon: Pokemon) => {
@@ -59,7 +56,7 @@ export function QuizPage() {
         }
       }, 1200);
     },
-    [state, currentPokemon, combo, questionIndex, totalQuestions]
+    [state, currentPokemon, combo, questionIndex, totalQuestions],
   );
 
   const resetQuiz = () => {
@@ -88,9 +85,7 @@ export function QuizPage() {
               <p className="text-xs text-muted-foreground">최대 콤보</p>
             </div>
             <div>
-              <p className="font-semibold text-foreground">
-                {totalQuestions}문제
-              </p>
+              <p className="font-semibold text-foreground">{totalQuestions}문제</p>
               <p className="text-xs text-muted-foreground">총 문제</p>
             </div>
           </div>
@@ -111,9 +106,7 @@ export function QuizPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-pixel text-lg text-foreground sm:text-xl">Quiz</h1>
-          <p className="mt-1 text-sm text-secondary-custom">
-            실루엣을 보고 포켓몬을 맞혀보세요!
-          </p>
+          <p className="mt-1 text-sm text-secondary-custom">실루엣을 보고 포켓몬을 맞혀보세요!</p>
         </div>
         <div className="flex items-center gap-4">
           {combo >= 2 && (
@@ -165,9 +158,7 @@ export function QuizPage() {
         </div>
       </div>
 
-      <p className="text-center font-pixel text-sm text-foreground">
-        이 포켓몬은 누구일까요?
-      </p>
+      <p className="text-center font-pixel text-sm text-foreground">이 포켓몬은 누구일까요?</p>
 
       {/* Answer Choices */}
       <div className="mx-auto grid max-w-2xl grid-cols-2 gap-3">

@@ -1,12 +1,7 @@
 export function PokeballSpinner({ size = 48 }: { size?: number }) {
   return (
     <div className="flex items-center justify-center p-8">
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 100 100"
-        className="animate-pokeball-wobble"
-      >
+      <svg width={size} height={size} viewBox="0 0 100 100" className="animate-pokeball-wobble">
         <circle cx="50" cy="50" r="48" fill="#cc0000" stroke="#2a2a4a" strokeWidth="4" />
         <rect x="2" y="46" width="96" height="8" fill="#2a2a4a" />
         <circle cx="50" cy="50" r="48" fill="url(#spinHalf)" stroke="#2a2a4a" strokeWidth="4" />

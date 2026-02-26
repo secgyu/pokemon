@@ -21,7 +21,7 @@ export function StatBar({ label, value, max = 255 }: StatBarProps) {
       ([entry]) => {
         if (entry.isIntersecting) setAnimated(true);
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
@@ -32,12 +32,8 @@ export function StatBar({ label, value, max = 255 }: StatBarProps) {
 
   return (
     <div ref={ref} className="flex items-center gap-3">
-      <span className="w-12 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">
-        {label}
-      </span>
-      <span className="w-8 text-right text-sm font-semibold tabular-nums text-foreground">
-        {value}
-      </span>
+      <span className="w-12 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</span>
+      <span className="w-8 text-right text-sm font-semibold tabular-nums text-foreground">{value}</span>
       <div className="flex-1 h-2 rounded-full bg-[#2a2a4a] overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${animated ? "animate-stat-fill" : ""}`}

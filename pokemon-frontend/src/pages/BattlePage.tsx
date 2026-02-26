@@ -2,13 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Swords, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  POKEMON_DATA,
-  getSpriteUrl,
-  TYPE_COLORS,
-  type Pokemon,
-  type PokemonMove,
-} from "@/data/pokemon";
+import { POKEMON_DATA, getSpriteUrl, TYPE_COLORS, type Pokemon, type PokemonMove } from "@/data/pokemon";
 import { TypeBadge } from "@/components/pokemon/TypeBadge";
 
 interface BattleLog {
@@ -22,17 +16,11 @@ interface BattlerState {
 }
 
 function getRandomPokemon(exclude?: number): Pokemon {
-  const pool = exclude
-    ? POKEMON_DATA.filter((p) => p.id !== exclude)
-    : POKEMON_DATA;
+  const pool = exclude ? POKEMON_DATA.filter((p) => p.id !== exclude) : POKEMON_DATA;
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function calculateDamage(
-  attacker: Pokemon,
-  defender: Pokemon,
-  move: PokemonMove
-): number {
+function calculateDamage(attacker: Pokemon, defender: Pokemon, move: PokemonMove): number {
   if (move.power === 0) return 0;
   const atkStat = move.category === "special" ? attacker.stats.spAtk : attacker.stats.attack;
   const defStat = move.category === "special" ? defender.stats.spDef : defender.stats.defense;
@@ -64,22 +52,14 @@ function HpBar({ current, max }: { current: number; max: number }) {
   );
 }
 
-function PokemonBattlePanel({
-  battler,
-  isPlayer,
-}: {
-  battler: BattlerState;
-  isPlayer: boolean;
-}) {
+function PokemonBattlePanel({ battler, isPlayer }: { battler: BattlerState; isPlayer: boolean }) {
   const { pokemon, currentHp } = battler;
 
   return (
     <div className="flex flex-col items-center gap-3">
       <div className="text-center">
         <div className="flex items-center justify-center gap-2">
-          <span className="text-xs font-medium text-muted-foreground">
-            {isPlayer ? "MY" : "ENEMY"}
-          </span>
+          <span className="text-xs font-medium text-muted-foreground">{isPlayer ? "MY" : "ENEMY"}</span>
         </div>
         <h3 className="font-pixel text-xs text-foreground sm:text-sm">{pokemon.nameKo}</h3>
         <div className="mt-1 flex justify-center gap-1">
@@ -119,9 +99,7 @@ export function BattlePage() {
     const e = getRandomPokemon(25);
     return { pokemon: e, currentHp: e.stats.hp };
   });
-  const [logs, setLogs] = useState<BattleLog[]>([
-    { text: "배틀 시작! 상대의 포켓몬이 나타났다!", type: "info" },
-  ]);
+  const [logs, setLogs] = useState<BattleLog[]>([{ text: "배틀 시작! 상대의 포켓몬이 나타났다!", type: "info" }]);
   const [battleOver, setBattleOver] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const logEndRef = useRef<HTMLDivElement>(null);
@@ -165,8 +143,7 @@ export function BattlePage() {
 
     await new Promise((r) => setTimeout(r, 600));
 
-    const enemyMove =
-      enemy.pokemon.moves[Math.floor(Math.random() * enemy.pokemon.moves.length)];
+    const enemyMove = enemy.pokemon.moves[Math.floor(Math.random() * enemy.pokemon.moves.length)];
     const enemyHit = Math.random() * 100 <= enemyMove.accuracy;
 
     if (enemyHit) {
@@ -207,9 +184,7 @@ export function BattlePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-pixel text-lg text-foreground sm:text-xl">Battle</h1>
-          <p className="mt-1 text-sm text-secondary-custom">
-            포켓몬 배틀 시뮬레이터
-          </p>
+          <p className="mt-1 text-sm text-secondary-custom">포켓몬 배틀 시뮬레이터</p>
         </div>
         <Button
           onClick={resetBattle}
@@ -217,8 +192,7 @@ export function BattlePage() {
           size="sm"
           className="gap-2 border-border text-foreground hover:bg-secondary cursor-pointer"
         >
-          <RotateCcw className="h-4 w-4" />
-          새 배틀
+          <RotateCcw className="h-4 w-4" />새 배틀
         </Button>
       </div>
 
@@ -269,9 +243,7 @@ export function BattlePage() {
         <div className="lg:col-span-1">
           <div className="rounded-xl border border-border bg-card">
             <div className="border-b border-border px-4 py-3">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Battle Log
-              </h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Battle Log</h3>
             </div>
             <ScrollArea className="h-[400px] p-3">
               <div className="space-y-1.5 font-mono text-xs">

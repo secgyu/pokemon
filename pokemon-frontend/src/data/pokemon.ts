@@ -43,17 +43,35 @@ export interface PokemonMove {
   category: "physical" | "special" | "status";
 }
 
-export interface Pokemon {
+export interface PokemonListItem {
   id: number;
   name: string;
   nameKo: string;
   types: PokemonType[];
+}
+
+export interface PokemonDetail extends PokemonListItem {
   stats: PokemonStats;
   moves: PokemonMove[];
   height: number;
   weight: number;
   description: string;
 }
+
+export type Pokemon = PokemonDetail;
+
+export const GENERATIONS = [
+  { label: "전체", range: [1, 1025] as const },
+  { label: "1세대", range: [1, 151] as const },
+  { label: "2세대", range: [152, 251] as const },
+  { label: "3세대", range: [252, 386] as const },
+  { label: "4세대", range: [387, 493] as const },
+  { label: "5세대", range: [494, 649] as const },
+  { label: "6세대", range: [650, 721] as const },
+  { label: "7세대", range: [722, 809] as const },
+  { label: "8세대", range: [810, 905] as const },
+  { label: "9세대", range: [906, 1025] as const },
+];
 
 export function getSpriteUrl(id: number): string {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
