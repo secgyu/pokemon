@@ -50,28 +50,62 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* Pokemon Type Colors */
-  --color-type-normal: #A8A77A;
-  --color-type-fire: #EE8130;
-  --color-type-water: #6390F0;
-  --color-type-electric: #F7D02C;
-  --color-type-grass: #7AC74C;
-  --color-type-ice: #96D9D6;
-  --color-type-fighting: #C22E28;
-  --color-type-poison: #A33EA1;
-  --color-type-ground: #E2BF65;
-  --color-type-flying: #A98FF3;
-  --color-type-psychic: #F95587;
-  --color-type-bug: #A6B91A;
-  --color-type-rock: #B6A136;
+  --color-type-normal: #a8a77a;
+  --color-type-fire: #ee8130;
+  --color-type-water: #6390f0;
+  --color-type-electric: #f7d02c;
+  --color-type-grass: #7ac74c;
+  --color-type-ice: #96d9d6;
+  --color-type-fighting: #c22e28;
+  --color-type-poison: #a33ea1;
+  --color-type-ground: #e2bf65;
+  --color-type-flying: #a98ff3;
+  --color-type-psychic: #f95587;
+  --color-type-bug: #a6b91a;
+  --color-type-rock: #b6a136;
   --color-type-ghost: #735797;
-  --color-type-dragon: #6F35FC;
+  --color-type-dragon: #6f35fc;
   --color-type-dark: #705746;
-  --color-type-steel: #B7B7CE;
-  --color-type-fairy: #D685AD;
+  --color-type-steel: #b7b7ce;
+  --color-type-fairy: #d685ad;
 }
 
 :root {
   --radius: 0.75rem;
+  --background: #f5f5fa;
+  --foreground: #1a1a2e;
+  --card: #ffffff;
+  --card-foreground: #1a1a2e;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a2e;
+  --primary: #d4a700;
+  --primary-foreground: #ffffff;
+  --secondary: #e8e8f0;
+  --secondary-foreground: #1a1a2e;
+  --muted: #f0f0f5;
+  --muted-foreground: #606070;
+  --accent: #e8e8f0;
+  --accent-foreground: #1a1a2e;
+  --destructive: #cc0000;
+  --border: #d0d0e0;
+  --input: #d0d0e0;
+  --ring: #3b82f6;
+  --chart-1: #d4a700;
+  --chart-2: #3b82f6;
+  --chart-3: #16a34a;
+  --chart-4: #9333ea;
+  --chart-5: #ea580c;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a1a2e;
+  --sidebar-primary: #d4a700;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f0f0f5;
+  --sidebar-accent-foreground: #1a1a2e;
+  --sidebar-border: #d0d0e0;
+  --sidebar-ring: #3b82f6;
+}
+
+.dark {
   --background: #0a0a0f;
   --foreground: #f0f0f0;
   --card: #1a1a2e;
@@ -92,9 +126,9 @@
   --ring: #7dd3fc;
   --chart-1: #f5c518;
   --chart-2: #7dd3fc;
-  --chart-3: #7AC74C;
+  --chart-3: #7ac74c;
   --chart-4: #a855f7;
-  --chart-5: #EE8130;
+  --chart-5: #ee8130;
   --sidebar: #12121a;
   --sidebar-foreground: #f0f0f0;
   --sidebar-primary: #f5c518;
@@ -121,10 +155,11 @@
     font-family: "Press Start 2P", monospace;
   }
   .text-muted-custom {
-    color: #606070;
+    color: var(--muted-foreground);
+    opacity: 0.7;
   }
   .text-secondary-custom {
-    color: #a0a0b0;
+    color: var(--muted-foreground);
   }
   .sprite-pixel {
     image-rendering: pixelated;
@@ -139,15 +174,28 @@
 
 /* ── Pokeball Spinner ── */
 @keyframes pokeball-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pokeball-wobble {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-15deg); }
-  50% { transform: rotate(10deg); }
-  75% { transform: rotate(-5deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-15deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
 }
 
 .animate-pokeball-spin {
@@ -160,24 +208,25 @@
 
 /* ── Shimmer Skeleton ── */
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
-    #1a1a2e 0%,
-    #2a2a4a 50%,
-    #1a1a2e 100%
-  );
+  background: linear-gradient(90deg, var(--card) 0%, var(--secondary) 50%, var(--card) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
 /* ── Stat Bar Animation ── */
 @keyframes stat-fill {
-  from { width: 0; }
+  from {
+    width: 0;
+  }
 }
 
 .animate-stat-fill {
@@ -186,24 +235,113 @@
 
 /* ── Page Fade In ── */
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
 }
 
+/* ── Slide Up (for stagger) ── */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.35s ease-out both;
+}
+
+/* ── Scale In (dialogs, popovers) ── */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out;
+}
+
+/* ── Pulse Glow (combo, score) ── */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: 0 0 20px 4px var(--primary);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 1s ease-in-out infinite;
+}
+
+/* ── Score Pop ── */
+@keyframes score-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-score-pop {
+  animation: score-pop 0.3s ease-out;
+}
+
 /* ── Correct/Wrong Animations ── */
 @keyframes flash-green {
-  0%, 100% { background-color: transparent; }
-  50% { background-color: rgba(122, 199, 76, 0.3); }
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba(122, 199, 76, 0.3);
+  }
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-  20%, 40%, 60%, 80% { transform: translateX(4px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
 }
 
 .animate-correct {
@@ -214,17 +352,44 @@
   animation: shake 0.4s ease;
 }
 
+/* ── Float (idle pokemon) ── */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ── Smooth transitions for theme ── */
+body,
+.bg-card,
+.bg-background,
+.bg-sidebar,
+.bg-popover {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0f;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a4a;
+  background: var(--border);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #4a4a8a;
+  background: var(--muted-foreground);
 }

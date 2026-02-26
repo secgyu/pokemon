@@ -16,11 +16,13 @@ export function SearchInput({ value, onChange, placeholder = "검색...", classN
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        aria-label={placeholder}
         className="border-border bg-card pl-9 pr-9 text-foreground placeholder:text-muted-foreground focus-visible:ring-ring"
       />
       {value && (
         <button
           onClick={() => onChange("")}
+          aria-label="검색 초기화"
           className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
         >
           <X className="h-4 w-4" />

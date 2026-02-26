@@ -17,7 +17,8 @@ export function MoveGrid({ moves, disabled, onSelect }: MoveGridProps) {
             key={move.name}
             onClick={() => onSelect(move)}
             disabled={disabled}
-            className="group flex items-center justify-between rounded-lg border border-border px-3 py-2.5 text-left transition-all duration-150 hover:border-[#4a4a8a] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+            aria-label={`${move.name} 사용 (${move.type} 타입, 위력 ${move.power || 0})`}
+            className="group flex items-center justify-between rounded-lg border border-border px-3 py-2.5 text-left transition-all duration-150 hover:border-ring/50 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
             style={{
               background: `linear-gradient(135deg, ${TYPE_COLORS[move.type]}15, transparent)`,
             }}

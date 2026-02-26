@@ -1,9 +1,10 @@
 import { NavLink } from "react-router-dom";
 import { NAV_ITEMS } from "@/constants";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Sidebar() {
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[220px] flex-col border-r border-border bg-[#12121a]">
+    <aside className="fixed left-0 top-0 z-40 flex h-screen w-[220px] flex-col border-r border-border bg-sidebar">
       <div className="flex items-center gap-3 px-5 py-6">
         <svg width="28" height="28" viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="48" fill="#cc0000" stroke="#2a2a4a" strokeWidth="4" />
@@ -25,7 +26,7 @@ export function Sidebar() {
         <span className="font-pixel text-[11px] leading-tight text-primary">POKéMON</span>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1 px-3">
+      <nav aria-label="메인 네비게이션" className="flex flex-1 flex-col gap-1 px-3">
         {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
@@ -34,8 +35,8 @@ export function Sidebar() {
             className={({ isActive }) =>
               `group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                 isActive
-                  ? "border-l-[3px] border-primary bg-[#1a1a2e] text-foreground"
-                  : "border-l-[3px] border-transparent text-muted-foreground hover:bg-[#1a1a2e] hover:text-foreground"
+                  ? "border-l-[3px] border-primary bg-sidebar-accent text-foreground"
+                  : "border-l-[3px] border-transparent text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
               }`
             }
           >
@@ -45,8 +46,9 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-border px-5 py-4">
+      <div className="flex items-center justify-between border-t border-border px-5 py-4">
         <p className="text-[10px] text-muted-custom">Pokémon All-in-One v1.0</p>
+        <ThemeToggle />
       </div>
     </aside>
   );

@@ -34,7 +34,14 @@ export function StatBar({ label, value, max = 255 }: StatBarProps) {
     <div ref={ref} className="flex items-center gap-3">
       <span className="w-12 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</span>
       <span className="w-8 text-right text-sm font-semibold tabular-nums text-foreground">{value}</span>
-      <div className="flex-1 h-2 rounded-full bg-[#2a2a4a] overflow-hidden">
+      <div
+        role="progressbar"
+        aria-valuenow={value}
+        aria-valuemin={0}
+        aria-valuemax={max}
+        aria-label={`${label} ${value}`}
+        className="flex-1 h-2 rounded-full bg-secondary overflow-hidden"
+      >
         <div
           className={`h-full rounded-full transition-all ${animated ? "animate-stat-fill" : ""}`}
           style={{

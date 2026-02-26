@@ -34,7 +34,7 @@ export function BattlePanel({ battler, isPlayer }: BattlePanelProps) {
           alt={pokemon.name}
           size="lg"
           className={`relative drop-shadow-lg ${
-            currentHp <= 0 ? "grayscale opacity-40" : ""
+            currentHp <= 0 ? "grayscale opacity-40" : "animate-float"
           } transition-all duration-300`}
         />
       </div>

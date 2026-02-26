@@ -26,7 +26,7 @@ export function BattleLogPanel({ logs }: BattleLogPanelProps) {
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Battle Log</h3>
       </div>
       <ScrollArea className="h-[400px] p-3">
-        <div className="space-y-1.5 font-mono text-xs">
+        <div aria-live="polite" className="space-y-1.5 font-mono text-xs">
           {logs.map((log, i) => (
             <p key={i} className={LOG_STYLE[log.type]}>
               {log.text}

@@ -91,7 +91,7 @@ export function QuizPage() {
         </div>
         <div className="flex items-center gap-4">
           {combo >= 2 && (
-            <div className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
+            <div className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary animate-pulse-glow">
               <Zap className="h-3.5 w-3.5" />
               {combo}x COMBO
             </div>
@@ -108,7 +108,7 @@ export function QuizPage() {
       </p>
 
       <div className="flex justify-center py-6">
-        <div className="relative">
+        <div className={`relative ${phase === "playing" ? "animate-float" : ""}`}>
           <PokemonSprite
             id={currentPokemon.id}
             size="xl"
@@ -132,7 +132,7 @@ export function QuizPage() {
 
       <div className="mx-auto grid max-w-2xl grid-cols-2 gap-3">
         {choices.map((pokemon) => {
-          let borderClass = "border-border hover:border-[#4a4a8a]";
+          let borderClass = "border-border hover:border-ring/50";
           if (selectedId !== null) {
             if (pokemon.id === currentPokemon.id) {
               borderClass = "border-[#7AC74C] bg-[#7AC74C]/10";
@@ -145,7 +145,8 @@ export function QuizPage() {
               key={pokemon.id}
               onClick={() => handleAnswer(pokemon)}
               disabled={phase !== "playing"}
-              className={`rounded-xl border ${borderClass} bg-card p-4 text-center transition-all duration-200 active:scale-[0.97] disabled:cursor-not-allowed cursor-pointer ${
+              aria-label={`${pokemon.nameKo} 선택`}
+              className={`rounded-xl border ${borderClass} bg-card p-4 text-center transition-all duration-200 active:scale-[0.97] disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer ${
                 phase === "playing" ? "hover:-translate-y-0.5" : ""
               }`}
             >

@@ -18,7 +18,7 @@ export function PokemonDetailDialog({ pokemonId, open, onOpenChange }: PokemonDe
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md border-border bg-[#12121a] p-0 overflow-hidden">
+      <DialogContent className="max-w-md border-border bg-popover p-0 overflow-hidden">
         {loading && (
           <div className="flex items-center justify-center py-20">
             <PokeballSpinner size={40} />

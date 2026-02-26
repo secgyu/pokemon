@@ -15,7 +15,14 @@ export function HpBar({ current, max }: HpBarProps) {
           {Math.max(0, current)} / {max}
         </span>
       </div>
-      <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#2a2a4a]">
+      <div
+        role="progressbar"
+        aria-valuenow={Math.max(0, current)}
+        aria-valuemin={0}
+        aria-valuemax={max}
+        aria-label={`HP ${Math.max(0, current)} / ${max}`}
+        className="h-2.5 w-full overflow-hidden rounded-full bg-secondary"
+      >
         <div
           className="h-full rounded-full transition-all duration-500 ease-out"
           style={{ width: `${pct}%`, backgroundColor: color }}

@@ -15,11 +15,12 @@ export function TeamSlots({ team, onAdd, onRemove }: TeamSlotsProps) {
         pokemon ? (
           <div
             key={i}
-            className="group relative flex flex-col items-center rounded-xl border border-border bg-card p-3 transition-all hover:border-[#4a4a8a]"
+            className="group relative flex flex-col items-center rounded-xl border border-border bg-card p-3 transition-all hover:border-ring/50"
           >
             <button
               onClick={() => onRemove(i)}
-              className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#cc0000] text-white opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer"
+              aria-label={`${pokemon.nameKo} 팀에서 제거`}
+              className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
             >
               <X className="h-3 w-3" />
             </button>
@@ -37,7 +38,7 @@ export function TeamSlots({ team, onAdd, onRemove }: TeamSlotsProps) {
           <button
             key={i}
             onClick={() => onAdd(i)}
-            className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card/50 p-3 py-6 transition-all hover:border-[#4a4a8a] hover:bg-card cursor-pointer"
+            className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card/50 p-3 py-6 transition-all hover:border-ring/50 hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-border">
               <Plus className="h-4 w-4 text-muted-foreground" />

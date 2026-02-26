@@ -21,7 +21,11 @@ export function TeamAnalysis({ team, details, detailsLoading, open, onToggle }: 
 
   return (
     <div className="rounded-xl border border-border bg-card">
-      <button onClick={onToggle} className="flex w-full items-center justify-between px-4 py-3 cursor-pointer">
+      <button
+        onClick={onToggle}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between px-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-t-xl cursor-pointer"
+      >
         <div className="flex items-center gap-2">
           <Shield className="h-4 w-4 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">팀 분석</h3>
@@ -101,8 +105,14 @@ function WeaknessMap({ weaknesses }: { weaknesses: Map<PokemonType, number> }) {
                 className="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded text-[10px] font-bold"
                 style={{
                   backgroundColor:
-                    count >= 3 ? "#cc000030" : count >= 2 ? "#f5c51820" : count >= 1 ? "#2a2a4a" : "#1a1a2e",
-                  color: count >= 3 ? "#cc0000" : count >= 2 ? "#f5c518" : count >= 1 ? "#a0a0b0" : "#606070",
+                    count >= 3
+                      ? "color-mix(in srgb, var(--destructive) 20%, transparent)"
+                      : count >= 2
+                        ? "color-mix(in srgb, var(--primary) 12%, transparent)"
+                        : count >= 1
+                          ? "var(--secondary)"
+                          : "var(--muted)",
+                  color: count >= 3 ? "var(--destructive)" : count >= 2 ? "var(--primary)" : "var(--muted-foreground)",
                 }}
               >
                 {count}

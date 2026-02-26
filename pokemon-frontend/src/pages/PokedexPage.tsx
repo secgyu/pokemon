@@ -5,7 +5,7 @@ import { ALL_TYPES, GENERATIONS, type PokemonType } from "@/data/pokemon";
 import { usePokemonList } from "@/hooks/usePokemonList";
 import { PokemonCard } from "@/components/pokemon/PokemonCard";
 import { PokemonDetailDialog } from "@/components/pokemon/PokemonDetailDialog";
-import { LoadingScreen, ErrorScreen, SearchInput } from "@/components/common";
+import { ErrorScreen, SearchInput, SkeletonCard } from "@/components/common";
 import { TypeBadge } from "@/components/pokemon/TypeBadge";
 
 const PAGE_SIZE = 60;
@@ -49,7 +49,21 @@ export function PokedexPage() {
     setVisibleCount(PAGE_SIZE);
   };
 
-  if (loading) return <LoadingScreen message="포켓몬 도감 로딩중..." />;
+  if (loading) {
+    return (
+      <div className="space-y-5">
+        <div>
+          <div className="h-6 w-32 rounded skeleton-shimmer" />
+          <div className="mt-2 h-4 w-48 rounded skeleton-shimmer" />
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {Array.from({ length: 20 }, (_, i) => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
   if (error) return <ErrorScreen message={error} />;
 
   return (
@@ -87,7 +101,7 @@ export function PokedexPage() {
               }}
               className={`cursor-pointer transition-all duration-150 ${
                 selectedTypes.includes(type)
-                  ? "scale-105 ring-2 ring-white/30 rounded-full"
+                  ? "scale-105 ring-2 ring-foreground/30 rounded-full"
                   : "opacity-50 hover:opacity-80"
               }`}
             >
@@ -119,8 +133,10 @@ export function PokedexPage() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {visible.map((p) => (
-              <PokemonCard key={p.id} pokemon={p} onClick={() => setSelectedPokemonId(p.id)} />
+            {visible.map((p, i) => (
+              <div key={p.id} className="animate-slide-up" style={{ animationDelay: `${Math.min(i * 30, 300)}ms` }}>
+                <PokemonCard pokemon={p} onClick={() => setSelectedPokemonId(p.id)} />
+              </div>
             ))}
           </div>
           {hasMore && (

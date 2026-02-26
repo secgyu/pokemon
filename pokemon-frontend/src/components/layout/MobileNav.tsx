@@ -1,9 +1,13 @@
 import { NavLink } from "react-router-dom";
 import { NAV_ITEMS } from "@/constants";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function MobileNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-border bg-[#12121a] py-2 md:hidden">
+    <nav
+      aria-label="모바일 네비게이션"
+      className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-border bg-sidebar py-2 md:hidden"
+    >
       {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
         <NavLink
           key={to}
@@ -19,6 +23,7 @@ export function MobileNav() {
           {label}
         </NavLink>
       ))}
+      <ThemeToggle />
     </nav>
   );
 }

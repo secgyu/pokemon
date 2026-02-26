@@ -12,7 +12,8 @@ export function PokemonCard({ pokemon, onClick }: PokemonCardProps) {
   return (
     <button
       onClick={onClick}
-      className="group relative flex flex-col items-center rounded-xl border border-border bg-card p-4 text-left transition-all duration-200 hover:-translate-y-1 hover:border-[#4a4a8a] cursor-pointer"
+      aria-label={`${pokemon.nameKo} (${formatPokedexNumber(pokemon.id)}) 상세 보기`}
+      className="group relative flex flex-col items-center rounded-xl border border-border bg-card p-4 text-left transition-all duration-200 hover:-translate-y-1 hover:border-ring/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
       style={{ boxShadow: "none" }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `0 0 16px ${primaryColor}25`;
