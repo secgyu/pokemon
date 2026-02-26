@@ -1,13 +1,12 @@
 import { useState, useMemo } from "react";
-import { Search, X, ChevronDown } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { X, ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ALL_TYPES, GENERATIONS, type PokemonType } from "@/data/pokemon";
 import { usePokemonList } from "@/hooks/usePokemonList";
 import { PokemonCard } from "@/components/pokemon/PokemonCard";
 import { PokemonDetailDialog } from "@/components/pokemon/PokemonDetailDialog";
-import { PokeballSpinner } from "@/components/pokemon/PokeballSpinner";
+import { LoadingScreen, ErrorScreen, SearchInput } from "@/components/common";
 import { TypeBadge } from "@/components/pokemon/TypeBadge";
-import { Button } from "@/components/ui/button";
 
 const PAGE_SIZE = 60;
 
@@ -25,18 +24,14 @@ export function PokedexPage() {
 
   const filtered = useMemo(() => {
     const [genMin, genMax] = GENERATIONS[selectedGen].range;
-
     return pokemon.filter((p) => {
       const matchesGen = p.id >= genMin && p.id <= genMax;
-
       const matchesSearch =
         !search ||
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.nameKo.includes(search) ||
         String(p.id).includes(search);
-
       const matchesType = selectedTypes.length === 0 || selectedTypes.some((t) => p.types.includes(t));
-
       return matchesGen && matchesSearch && matchesType;
     });
   }, [pokemon, search, selectedTypes, selectedGen]);
@@ -44,28 +39,18 @@ export function PokedexPage() {
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
 
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    setVisibleCount(PAGE_SIZE);
+  };
+
   const handleGenChange = (index: number) => {
     setSelectedGen(index);
     setVisibleCount(PAGE_SIZE);
   };
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-32">
-        <PokeballSpinner size={56} />
-        <p className="mt-4 font-pixel text-xs text-muted-foreground">포켓몬 도감 로딩중...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center py-32 text-center">
-        <p className="font-pixel text-sm text-[#cc0000]">로딩 실패</p>
-        <p className="mt-2 text-xs text-muted-foreground">{error}</p>
-      </div>
-    );
-  }
+  if (loading) return <LoadingScreen message="포켓몬 도감 로딩중..." />;
+  if (error) return <ErrorScreen message={error} />;
 
   return (
     <div className="space-y-5">
@@ -91,27 +76,7 @@ export function PokedexPage() {
       </div>
 
       <div className="space-y-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="이름, 번호로 검색..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setVisibleCount(PAGE_SIZE);
-            }}
-            className="border-border bg-card pl-9 pr-9 text-foreground placeholder:text-muted-foreground focus-visible:ring-ring"
-          />
-          {search && (
-            <button
-              onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-
+        <SearchInput value={search} onChange={handleSearch} placeholder="이름, 번호로 검색..." />
         <div className="flex flex-wrap gap-1.5">
           {ALL_TYPES.map((type) => (
             <button
@@ -158,7 +123,6 @@ export function PokedexPage() {
               <PokemonCard key={p.id} pokemon={p} onClick={() => setSelectedPokemonId(p.id)} />
             ))}
           </div>
-
           {hasMore && (
             <div className="flex justify-center pt-2 pb-4">
               <Button

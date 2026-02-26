@@ -1,105 +1,86 @@
-import { useState, useCallback, useMemo } from "react";
-import { Trophy, Zap, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { POKEMON_DATA, getSpriteUrl, type Pokemon } from "@/data/pokemon";
-
-type QuizState = "playing" | "correct" | "wrong" | "finished";
-
-function getRandomChoices(answer: Pokemon, count = 4): Pokemon[] {
-  const others = POKEMON_DATA.filter((p) => p.id !== answer.id);
-  const shuffled = others.sort(() => Math.random() - 0.5).slice(0, count - 1);
-  const choices = [...shuffled, answer].sort(() => Math.random() - 0.5);
-  return choices;
-}
+import { useState, useCallback } from "react";
+import { Zap } from "lucide-react";
+import type { PokemonListItem } from "@/data/pokemon";
+import { LoadingScreen } from "@/components/common";
+import { PokemonSprite } from "@/components/common";
+import { QuizStartScreen } from "@/components/quiz/QuizStartScreen";
+import { QuizResultScreen } from "@/components/quiz/QuizResultScreen";
+import { usePokemonList } from "@/hooks/usePokemonList";
+import { type QuizPhase, type QuizSession, NUM_QUESTIONS, generateSession } from "@/lib/quiz";
 
 export function QuizPage() {
+  const { pokemon: allPokemon, loading } = usePokemonList();
   const [questionIndex, setQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [combo, setCombo] = useState(0);
   const [maxCombo, setMaxCombo] = useState(0);
-  const [state, setState] = useState<QuizState>("playing");
+  const [phase, setPhase] = useState<QuizPhase>("ready");
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [session, setSession] = useState<QuizSession | null>(null);
 
-  const questions = useMemo(() => {
-    return [...POKEMON_DATA].sort(() => Math.random() - 0.5);
-  }, []);
+  const totalQuestions = session ? Math.min(NUM_QUESTIONS, session.questions.length) : 0;
+  const currentPokemon = session?.questions[questionIndex] ?? null;
+  const choices = session?.choicesPerQuestion[questionIndex] ?? [];
 
-  const totalQuestions = Math.min(10, questions.length);
-  const currentPokemon = questions[questionIndex];
-
-  const choices = useMemo(() => getRandomChoices(currentPokemon), [currentPokemon]);
-
-  const handleAnswer = useCallback(
-    (pokemon: Pokemon) => {
-      if (state !== "playing") return;
-      setSelectedId(pokemon.id);
-
-      if (pokemon.id === currentPokemon.id) {
-        const newCombo = combo + 1;
-        const comboMultiplier = Math.min(newCombo, 5);
-        setScore((prev) => prev + 100 * comboMultiplier);
-        setCombo(newCombo);
-        setMaxCombo((prev) => Math.max(prev, newCombo));
-        setState("correct");
-      } else {
-        setCombo(0);
-        setState("wrong");
-      }
-
-      setTimeout(() => {
-        if (questionIndex + 1 >= totalQuestions) {
-          setState("finished");
-        } else {
-          setQuestionIndex((prev) => prev + 1);
-          setState("playing");
-          setSelectedId(null);
-        }
-      }, 1200);
-    },
-    [state, currentPokemon, combo, questionIndex, totalQuestions],
-  );
-
-  const resetQuiz = () => {
+  const startQuiz = useCallback(() => {
+    if (allPokemon.length === 0) return;
+    setSession(generateSession(allPokemon));
     setQuestionIndex(0);
     setScore(0);
     setCombo(0);
     setMaxCombo(0);
-    setState("playing");
+    setPhase("playing");
     setSelectedId(null);
-  };
+  }, [allPokemon]);
 
-  if (state === "finished") {
+  const handleAnswer = useCallback(
+    (pokemon: PokemonListItem) => {
+      if (phase !== "playing" || !currentPokemon) return;
+      setSelectedId(pokemon.id);
+
+      if (pokemon.id === currentPokemon.id) {
+        const newCombo = combo + 1;
+        setScore((prev) => prev + 100 * Math.min(newCombo, 5));
+        setCombo(newCombo);
+        setMaxCombo((prev) => Math.max(prev, newCombo));
+        setPhase("correct");
+      } else {
+        setCombo(0);
+        setPhase("wrong");
+      }
+
+      setTimeout(() => {
+        if (questionIndex + 1 >= totalQuestions) {
+          setPhase("finished");
+        } else {
+          setQuestionIndex((prev) => prev + 1);
+          setPhase("playing");
+          setSelectedId(null);
+        }
+      }, 1200);
+    },
+    [phase, currentPokemon, combo, questionIndex, totalQuestions],
+  );
+
+  if (loading) return <LoadingScreen message="퀴즈 준비중..." />;
+
+  if (phase === "ready" || !session || !currentPokemon) {
+    return <QuizStartScreen totalPokemon={allPokemon.length} onStart={startQuiz} />;
+  }
+
+  if (phase === "finished") {
     const finalScore = score + (selectedId === currentPokemon.id ? 100 * Math.min(combo, 5) : 0);
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center space-y-6">
-        <div className="rounded-xl border border-border bg-card p-8 text-center">
-          <Trophy className="mx-auto mb-4 h-12 w-12 text-primary" />
-          <h2 className="font-pixel text-lg text-foreground">퀴즈 완료!</h2>
-          <div className="mt-4 space-y-2">
-            <p className="text-3xl font-bold tabular-nums text-primary">{finalScore}</p>
-            <p className="text-sm text-muted-foreground">점수</p>
-          </div>
-          <div className="mt-4 flex justify-center gap-6 text-sm">
-            <div>
-              <p className="font-semibold text-foreground">{maxCombo}x</p>
-              <p className="text-xs text-muted-foreground">최대 콤보</p>
-            </div>
-            <div>
-              <p className="font-semibold text-foreground">{totalQuestions}문제</p>
-              <p className="text-xs text-muted-foreground">총 문제</p>
-            </div>
-          </div>
-          <Button
-            onClick={resetQuiz}
-            className="mt-6 gap-2 bg-primary text-primary-foreground hover:brightness-110 cursor-pointer"
-          >
-            <RotateCcw className="h-4 w-4" />
-            다시 도전
-          </Button>
-        </div>
-      </div>
+      <QuizResultScreen score={finalScore} maxCombo={maxCombo} totalQuestions={totalQuestions} onRestart={startQuiz} />
     );
   }
+
+  const silhouetteFilter =
+    phase === "playing"
+      ? "brightness(0)"
+      : phase === "correct"
+        ? "brightness(1) drop-shadow(0 0 12px rgba(122,199,76,0.5))"
+        : "brightness(1) drop-shadow(0 0 12px rgba(204,0,0,0.5))";
 
   return (
     <div className="space-y-6">
@@ -122,35 +103,24 @@ export function QuizPage() {
         </div>
       </div>
 
-      <div className="flex justify-center">
-        <p className="text-xs text-muted-foreground tabular-nums">
-          {questionIndex + 1} / {totalQuestions}
-        </p>
-      </div>
+      <p className="text-center text-xs text-muted-foreground tabular-nums">
+        {questionIndex + 1} / {totalQuestions}
+      </p>
 
-      {/* Silhouette */}
       <div className="flex justify-center py-6">
         <div className="relative">
-          <img
-            src={getSpriteUrl(currentPokemon.id)}
-            alt="Who's that Pokemon?"
-            className="h-40 w-40 sm:h-52 sm:w-52 drop-shadow-lg transition-all duration-300"
-            style={{
-              filter:
-                state === "playing"
-                  ? "brightness(0)"
-                  : state === "correct"
-                    ? "brightness(1) drop-shadow(0 0 12px rgba(122,199,76,0.5))"
-                    : "brightness(1) drop-shadow(0 0 12px rgba(204,0,0,0.5))",
-              imageRendering: "pixelated",
-            }}
+          <PokemonSprite
+            id={currentPokemon.id}
+            size="xl"
+            className="drop-shadow-lg transition-all duration-300"
+            style={{ filter: silhouetteFilter, imageRendering: "pixelated" }}
           />
-          {state === "correct" && (
+          {phase === "correct" && (
             <div className="absolute -top-3 -right-3 rounded-full bg-[#7AC74C] px-2 py-0.5 text-[10px] font-bold text-white">
               정답!
             </div>
           )}
-          {state === "wrong" && (
+          {phase === "wrong" && (
             <div className="absolute -top-3 -right-3 rounded-full bg-[#cc0000] px-2 py-0.5 text-[10px] font-bold text-white">
               오답!
             </div>
@@ -160,7 +130,6 @@ export function QuizPage() {
 
       <p className="text-center font-pixel text-sm text-foreground">이 포켓몬은 누구일까요?</p>
 
-      {/* Answer Choices */}
       <div className="mx-auto grid max-w-2xl grid-cols-2 gap-3">
         {choices.map((pokemon) => {
           let borderClass = "border-border hover:border-[#4a4a8a]";
@@ -171,14 +140,13 @@ export function QuizPage() {
               borderClass = "border-[#cc0000] bg-[#cc0000]/10 animate-wrong";
             }
           }
-
           return (
             <button
               key={pokemon.id}
               onClick={() => handleAnswer(pokemon)}
-              disabled={state !== "playing"}
+              disabled={phase !== "playing"}
               className={`rounded-xl border ${borderClass} bg-card p-4 text-center transition-all duration-200 active:scale-[0.97] disabled:cursor-not-allowed cursor-pointer ${
-                state === "playing" ? "hover:-translate-y-0.5" : ""
+                phase === "playing" ? "hover:-translate-y-0.5" : ""
               }`}
             >
               <p className="font-semibold text-foreground">{pokemon.nameKo}</p>

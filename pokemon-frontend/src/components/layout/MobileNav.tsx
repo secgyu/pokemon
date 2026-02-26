@@ -1,12 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { BookOpen, Swords, HelpCircle, Users } from "lucide-react";
-
-const NAV_ITEMS = [
-  { to: "/", icon: BookOpen, label: "Pokédex" },
-  { to: "/battle", icon: Swords, label: "Battle" },
-  { to: "/quiz", icon: HelpCircle, label: "Quiz" },
-  { to: "/team", icon: Users, label: "Team" },
-];
+import { NAV_ITEMS } from "@/constants";
 
 export function MobileNav() {
   return (
