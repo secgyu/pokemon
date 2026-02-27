@@ -2,24 +2,55 @@ import type { PokemonType, PokemonListItem, PokemonDetail, PokemonStats, Pokemon
 
 const POKEAPI_GRAPHQL_URL = "https://beta.pokeapi.co/graphql/v1beta";
 
-async function fetchGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
+const MAX_RETRIES = 3;
+const BASE_DELAY_MS = 1000;
 
-  try {
-    const res = await fetch(POKEAPI_GRAPHQL_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query, variables }),
-      signal: controller.signal,
-    });
-    if (!res.ok) throw new Error(`GraphQL request failed: ${res.status}`);
-    const json = await res.json();
-    if (json.errors) throw new Error(json.errors[0].message);
-    return json.data;
-  } finally {
-    clearTimeout(timeout);
+function isRetryable(error: unknown): boolean {
+  if (error instanceof DOMException && error.name === "AbortError") return true;
+  if (error instanceof TypeError) return true;
+  if (error instanceof Error && error.message.includes("GraphQL request failed")) {
+    const status = Number(error.message.split(": ")[1]);
+    return status >= 500 || status === 429;
   }
+  return false;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchGraphQL<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    try {
+      const res = await fetch(POKEAPI_GRAPHQL_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, variables }),
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error(`GraphQL request failed: ${res.status}`);
+      const json = await res.json();
+      if (json.errors) throw new Error(json.errors[0].message);
+      return json.data;
+    } catch (error) {
+      lastError = error;
+      if (attempt < MAX_RETRIES && isRetryable(error)) {
+        const jitter = Math.random() * 0.5 + 0.75;
+        await delay(BASE_DELAY_MS * 2 ** attempt * jitter);
+        continue;
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  throw lastError;
 }
 
 const POKEMON_LIST_QUERY = `
