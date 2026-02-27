@@ -1,8 +1,13 @@
 import { NavLink } from "react-router-dom";
+import { LogOut } from "lucide-react";
 import { NAV_ITEMS } from "@/constants";
 import { ThemeToggle } from "./ThemeToggle";
+import { useAuthContext } from "@/hooks/useAuthContext";
+import { Button } from "@/components/ui/button";
 
 export function Sidebar() {
+  const { user, logout } = useAuthContext();
+
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-[220px] flex-col border-r border-border bg-sidebar">
       <div className="flex items-center gap-3 px-5 py-6">
@@ -46,7 +51,21 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="flex items-center justify-between border-t border-border px-5 py-4">
+      <div className="border-t border-border px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+              {user!.nickname[0].toUpperCase()}
+            </div>
+            <span className="truncate text-xs font-medium text-foreground">{user!.nickname}</span>
+          </div>
+          <Button variant="ghost" size="icon-xs" onClick={logout} title="로그아웃">
+            <LogOut className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between border-t border-border px-5 py-3">
         <p className="text-[10px] text-muted-custom">Pokémon All-in-One v1.0</p>
         <ThemeToggle />
       </div>

@@ -1,8 +1,12 @@
 import { NavLink } from "react-router-dom";
+import { LogOut } from "lucide-react";
 import { NAV_ITEMS } from "@/constants";
 import { ThemeToggle } from "./ThemeToggle";
+import { useAuthContext } from "@/hooks/useAuthContext";
 
 export function MobileNav() {
+  const { user, logout } = useAuthContext();
+
   return (
     <nav
       aria-label="모바일 네비게이션"
@@ -23,6 +27,16 @@ export function MobileNav() {
           {label}
         </NavLink>
       ))}
+
+      <button
+        onClick={logout}
+        className="flex flex-col items-center gap-1 px-3 py-1 text-[10px] font-medium text-muted-foreground transition-colors"
+        title={`${user!.nickname} 로그아웃`}
+      >
+        <LogOut className="h-5 w-5" />
+        {user!.nickname}
+      </button>
+
       <ThemeToggle />
     </nav>
   );
