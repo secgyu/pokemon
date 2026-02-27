@@ -1,0 +1,95 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthResponse {
+  accessToken: String!
+  user: UserModel!
+}
+
+input CreateTeamInput {
+  name: String!
+  pokemonIds: [Int!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type FavoriteModel {
+  createdAt: DateTime!
+  id: ID!
+  pokemonId: Int!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  addFavorite(pokemonId: Int!): FavoriteModel!
+  createTeam(input: CreateTeamInput!): TeamModel!
+  deleteTeam(id: ID!): Boolean!
+  login(input: LoginInput!): AuthResponse!
+  removeFavorite(pokemonId: Int!): Boolean!
+  saveQuizScore(input: SaveScoreInput!): QuizScoreModel!
+  signup(input: SignupInput!): AuthResponse!
+  updateTeam(id: ID!, input: UpdateTeamInput!): TeamModel!
+}
+
+type Query {
+  me: UserModel!
+  myFavorites: [FavoriteModel!]!
+  myQuizScores: [QuizScoreModel!]!
+  myTeams: [TeamModel!]!
+  quizRankings(limit: Int! = 10): [RankingEntry!]!
+  team(id: ID!): TeamModel!
+}
+
+type QuizScoreModel {
+  createdAt: DateTime!
+  id: ID!
+  score: Int!
+  totalQuestions: Int!
+  user: UserModel!
+}
+
+type RankingEntry {
+  bestScore: Int!
+  nickname: String!
+  rank: Int!
+  totalGames: Int!
+}
+
+input SaveScoreInput {
+  score: Int!
+  totalQuestions: Int!
+}
+
+input SignupInput {
+  email: String!
+  nickname: String!
+  password: String!
+}
+
+type TeamModel {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  pokemonIds: [Int!]!
+  updatedAt: DateTime!
+}
+
+input UpdateTeamInput {
+  name: String
+  pokemonIds: [Int!]
+}
+
+type UserModel {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  nickname: String!
+}
