@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
-import { X, ChevronDown } from "lucide-react";
+import { X, ChevronDown, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ALL_TYPES, GENERATIONS, type PokemonType } from "@/data/pokemon";
 import { usePokemonList } from "@/hooks/usePokemonList";
+import { useFavorites } from "@/hooks/useFavorites";
 import { PokemonCard } from "@/components/pokemon/PokemonCard";
 import { PokemonDetailDialog } from "@/components/pokemon/PokemonDetailDialog";
 import { ErrorScreen, SearchInput, SkeletonCard } from "@/components/common";
@@ -12,9 +13,11 @@ const PAGE_SIZE = 60;
 
 export function PokedexPage() {
   const { pokemon, loading, error } = usePokemonList();
+  const { isFavorite, toggleFavorite, favoriteIds } = useFavorites();
   const [search, setSearch] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<PokemonType[]>([]);
   const [selectedGen, setSelectedGen] = useState(0);
+  const [showFavOnly, setShowFavOnly] = useState(false);
   const [selectedPokemonId, setSelectedPokemonId] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -25,16 +28,17 @@ export function PokedexPage() {
   const filtered = useMemo(() => {
     const [genMin, genMax] = GENERATIONS[selectedGen].range;
     return pokemon.filter((p) => {
-      const matchesGen = p.id >= genMin && p.id <= genMax;
-      const matchesSearch =
-        !search ||
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.nameKo.includes(search) ||
-        String(p.id).includes(search);
-      const matchesType = selectedTypes.length === 0 || selectedTypes.some((t) => p.types.includes(t));
-      return matchesGen && matchesSearch && matchesType;
+      if (p.id < genMin || p.id > genMax) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        if (!p.name.toLowerCase().includes(q) && !p.nameKo.includes(search) && !String(p.id).includes(search))
+          return false;
+      }
+      if (selectedTypes.length > 0 && !selectedTypes.some((t) => p.types.includes(t))) return false;
+      if (showFavOnly && !favoriteIds.has(p.id)) return false;
+      return true;
     });
-  }, [pokemon, search, selectedTypes, selectedGen]);
+  }, [pokemon, search, selectedTypes, selectedGen, showFavOnly, favoriteIds]);
 
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
@@ -43,9 +47,8 @@ export function PokedexPage() {
     setSearch(value);
     setVisibleCount(PAGE_SIZE);
   };
-
-  const handleGenChange = (index: number) => {
-    setSelectedGen(index);
+  const handleGenChange = (i: number) => {
+    setSelectedGen(i);
     setVisibleCount(PAGE_SIZE);
   };
 
@@ -73,7 +76,7 @@ export function PokedexPage() {
         <p className="mt-1 text-sm text-secondary-custom">총 {pokemon.length}마리의 포켓몬 도감</p>
       </div>
 
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap items-center gap-1.5">
         {GENERATIONS.map((gen, i) => (
           <button
             key={gen.label}
@@ -87,6 +90,20 @@ export function PokedexPage() {
             {gen.label}
           </button>
         ))}
+        <button
+          onClick={() => {
+            setShowFavOnly(!showFavOnly);
+            setVisibleCount(PAGE_SIZE);
+          }}
+          className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+            showFavOnly
+              ? "bg-red-500/10 text-red-500"
+              : "bg-card text-muted-foreground hover:text-foreground hover:bg-secondary"
+          }`}
+        >
+          <Heart className={`h-3 w-3 ${showFavOnly ? "fill-red-500" : ""}`} />
+          즐겨찾기
+        </button>
       </div>
 
       <div className="space-y-3">
@@ -99,11 +116,7 @@ export function PokedexPage() {
                 toggleType(type);
                 setVisibleCount(PAGE_SIZE);
               }}
-              className={`cursor-pointer transition-all duration-150 ${
-                selectedTypes.includes(type)
-                  ? "scale-105 ring-2 ring-foreground/30 rounded-full"
-                  : "opacity-50 hover:opacity-80"
-              }`}
+              className={`cursor-pointer transition-all duration-150 ${selectedTypes.includes(type) ? "scale-105 ring-2 ring-foreground/30 rounded-full" : "opacity-50 hover:opacity-80"}`}
             >
               <TypeBadge type={type} />
             </button>
@@ -121,8 +134,7 @@ export function PokedexPage() {
       </div>
 
       <div className="text-xs text-muted-custom">
-        {filtered.length}마리의 포켓몬
-        {visibleCount < filtered.length && ` (${visible.length}마리 표시중)`}
+        {filtered.length}마리의 포켓몬{visibleCount < filtered.length && ` (${visible.length}마리 표시중)`}
       </div>
 
       {filtered.length === 0 ? (
@@ -135,7 +147,12 @@ export function PokedexPage() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {visible.map((p, i) => (
               <div key={p.id} className="animate-slide-up" style={{ animationDelay: `${Math.min(i * 30, 300)}ms` }}>
-                <PokemonCard pokemon={p} onClick={() => setSelectedPokemonId(p.id)} />
+                <PokemonCard
+                  pokemon={p}
+                  onClick={() => setSelectedPokemonId(p.id)}
+                  isFavorite={isFavorite(p.id)}
+                  onToggleFavorite={toggleFavorite}
+                />
               </div>
             ))}
           </div>
