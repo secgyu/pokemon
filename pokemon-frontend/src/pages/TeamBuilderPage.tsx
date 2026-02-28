@@ -64,6 +64,15 @@ export function TeamBuilderPage() {
     });
   };
 
+  const reorderTeam = (fromIndex: number, toIndex: number) => {
+    setTeam((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
+  };
+
   if (listLoading) {
     return <LoadingScreen message="포켓몬 목록 불러오는 중..." />;
   }
@@ -75,7 +84,7 @@ export function TeamBuilderPage() {
         <p className="mt-1 text-sm text-secondary-custom">6마리의 포켓몬으로 최강의 팀을 구성하세요</p>
       </div>
 
-      <TeamSlots team={team} onAdd={openPicker} onRemove={removeFromTeam} />
+      <TeamSlots team={team} onAdd={openPicker} onRemove={removeFromTeam} onReorder={reorderTeam} />
 
       {showPicker && (
         <PokemonPicker
