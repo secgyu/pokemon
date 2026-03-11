@@ -17,6 +17,11 @@ export interface TrainerBattleState {
   activeIndex: number;
 }
 
+export interface PlayerBattleState {
+  team: BattlerState[];
+  activeIndex: number;
+}
+
 export const DEFAULT_MOVE: PokemonMove = {
   name: "Tackle",
   type: "normal",
@@ -33,7 +38,7 @@ export function ensureMoves(pokemon: PokemonDetail): PokemonDetail {
 export function calculateDamage(
   attacker: PokemonDetail,
   defender: PokemonDetail,
-  move: PokemonMove
+  move: PokemonMove,
 ): number {
   if (move.power === 0) return 0;
   const atkStat = move.category === "special" ? attacker.stats.spAtk : attacker.stats.attack;
@@ -49,25 +54,40 @@ export function pickRandomIds(pool: number[], count: number): number[] {
   return shuffled.slice(0, count);
 }
 
-export function buildTrainerBattleState(
-  trainer: TrainerData,
-  pokemonDetails: PokemonDetail[]
-): TrainerBattleState {
-  const team = pokemonDetails.map((p) => ({
+export function buildTeamState(pokemonDetails: PokemonDetail[]): BattlerState[] {
+  return pokemonDetails.map((p) => ({
     pokemon: ensureMoves(p),
     currentHp: p.stats.hp,
   }));
-  return { trainer, team, activeIndex: 0 };
 }
 
-export function getActiveBattler(state: TrainerBattleState): BattlerState {
+export function buildTrainerBattleState(
+  trainer: TrainerData,
+  pokemonDetails: PokemonDetail[],
+): TrainerBattleState {
+  return { trainer, team: buildTeamState(pokemonDetails), activeIndex: 0 };
+}
+
+export function buildPlayerBattleState(
+  pokemonDetails: PokemonDetail[],
+): PlayerBattleState {
+  return { team: buildTeamState(pokemonDetails), activeIndex: 0 };
+}
+
+export function getActiveBattler(state: TrainerBattleState | PlayerBattleState): BattlerState {
   return state.team[state.activeIndex];
 }
 
-export function hasRemainingPokemon(state: TrainerBattleState): boolean {
+export function hasRemainingPokemon(state: TrainerBattleState | PlayerBattleState): boolean {
   return state.team.some((b) => b.currentHp > 0);
 }
 
-export function nextAlivePokemonIndex(state: TrainerBattleState): number {
+export function nextAlivePokemonIndex(state: TrainerBattleState | PlayerBattleState): number {
   return state.team.findIndex((b, i) => i !== state.activeIndex && b.currentHp > 0);
+}
+
+export function getAliveSwapOptions(state: PlayerBattleState): number[] {
+  return state.team
+    .map((b, i) => (i !== state.activeIndex && b.currentHp > 0 ? i : -1))
+    .filter((i) => i !== -1);
 }

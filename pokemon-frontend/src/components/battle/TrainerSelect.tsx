@@ -1,15 +1,8 @@
+import { useState } from "react";
 import { Crown, Shield, Star } from "lucide-react";
 import { TYPE_COLORS } from "@/data/pokemon";
 import { PokemonSprite } from "@/components/common";
-import {
-  type TrainerData,
-  type TrainerRank,
-  GYM_LEADERS,
-  ELITE_FOUR,
-  CHAMPION,
-  RANK_LABELS,
-  RANK_COLORS,
-} from "@/data/trainers";
+import { type TrainerData, type TrainerRank, RANK_LABELS, RANK_COLORS, GENERATIONS_TRAINERS } from "@/data/trainers";
 
 interface TrainerSelectProps {
   onSelect: (trainer: TrainerData) => void;
@@ -74,16 +67,37 @@ function TrainerCard({ trainer, onClick }: { trainer: TrainerData; onClick: () =
 }
 
 export function TrainerSelect({ onSelect }: TrainerSelectProps) {
+  const [selectedGen, setSelectedGen] = useState(1);
+  const genData = GENERATIONS_TRAINERS.find((g) => g.generation === selectedGen)!;
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-1.5">
+        {GENERATIONS_TRAINERS.map((g) => (
+          <button
+            key={g.generation}
+            onClick={() => setSelectedGen(g.generation)}
+            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+              selectedGen === g.generation
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
+            }`}
+          >
+            {g.generation}세대
+          </button>
+        ))}
+      </div>
+
+      <p className="text-sm font-medium text-muted-foreground">{genData.label}</p>
+
       <section>
         <div className="mb-3 flex items-center gap-2">
           <Shield className="h-4 w-4 text-[#7AC74C]" />
           <h2 className="font-pixel text-sm text-foreground">체육관 관장</h2>
-          <span className="text-xs text-muted-foreground">({GYM_LEADERS.length}명)</span>
+          <span className="text-xs text-muted-foreground">({genData.gym.length}명)</span>
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {GYM_LEADERS.map((t) => (
+          {genData.gym.map((t) => (
             <TrainerCard key={t.id} trainer={t} onClick={() => onSelect(t)} />
           ))}
         </div>
@@ -93,10 +107,10 @@ export function TrainerSelect({ onSelect }: TrainerSelectProps) {
         <div className="mb-3 flex items-center gap-2">
           <Star className="h-4 w-4 text-[#6F35FC]" />
           <h2 className="font-pixel text-sm text-foreground">사천왕</h2>
-          <span className="text-xs text-muted-foreground">({ELITE_FOUR.length}명)</span>
+          <span className="text-xs text-muted-foreground">({genData.elite4.length}명)</span>
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {ELITE_FOUR.map((t) => (
+          {genData.elite4.map((t) => (
             <TrainerCard key={t.id} trainer={t} onClick={() => onSelect(t)} />
           ))}
         </div>
@@ -108,7 +122,7 @@ export function TrainerSelect({ onSelect }: TrainerSelectProps) {
           <h2 className="font-pixel text-sm text-foreground">챔피언</h2>
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <TrainerCard trainer={CHAMPION} onClick={() => onSelect(CHAMPION)} />
+          <TrainerCard trainer={genData.champion} onClick={() => onSelect(genData.champion)} />
         </div>
       </section>
     </div>
