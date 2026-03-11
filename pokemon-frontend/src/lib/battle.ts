@@ -1,4 +1,5 @@
 import type { PokemonDetail, PokemonMove } from "@/data/pokemon";
+import type { TrainerData } from "@/data/trainers";
 
 export interface BattleLog {
   text: string;
@@ -8,6 +9,12 @@ export interface BattleLog {
 export interface BattlerState {
   pokemon: PokemonDetail;
   currentHp: number;
+}
+
+export interface TrainerBattleState {
+  trainer: TrainerData;
+  team: BattlerState[];
+  activeIndex: number;
 }
 
 export const DEFAULT_MOVE: PokemonMove = {
@@ -40,4 +47,27 @@ export function calculateDamage(
 export function pickRandomIds(pool: number[], count: number): number[] {
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
+}
+
+export function buildTrainerBattleState(
+  trainer: TrainerData,
+  pokemonDetails: PokemonDetail[]
+): TrainerBattleState {
+  const team = pokemonDetails.map((p) => ({
+    pokemon: ensureMoves(p),
+    currentHp: p.stats.hp,
+  }));
+  return { trainer, team, activeIndex: 0 };
+}
+
+export function getActiveBattler(state: TrainerBattleState): BattlerState {
+  return state.team[state.activeIndex];
+}
+
+export function hasRemainingPokemon(state: TrainerBattleState): boolean {
+  return state.team.some((b) => b.currentHp > 0);
+}
+
+export function nextAlivePokemonIndex(state: TrainerBattleState): number {
+  return state.team.findIndex((b, i) => i !== state.activeIndex && b.currentHp > 0);
 }
